@@ -4,20 +4,21 @@
 from flask import Flask, jsonify, url_for
 from flask_cors import CORS
 from models import db, User
-from json_encoder import SapiJSONEncoder
-from routing import routing
+from json_encoder import PoapiJSONEncoder
+from routes import routes
+from exceptions import *
 
 
 # ********************** CONFIG **********************
 
 # create the application
-app = Flask("sapi1")
+app = Flask("poapi")
 
 # CORS handling
 CORS(app, resources={r"/*": {"origins": "*"}})
 
 # custom jsonEncoder
-app.json_encoder = SapiJSONEncoder
+app.json_encoder = PoapiJSONEncoder
 
 # database connexion
 database_url = 'sqlite://'  # this is a local in-memory database for testing purpose only
@@ -33,7 +34,8 @@ db.create_all()
 # ************** MODELS INITIALIZATION ***************
 
 admin = User(username='admin', email='admin@example.com')
-guest = User(username='guest', email='guest@example.com')
+guest = User(username='guest', email='guest@example.com', job='consultant')
+
 db.session.add(admin)
 db.session.add(guest)
 
@@ -41,7 +43,14 @@ db.session.add(guest)
 db.session.commit()
 
 
-# ********************* ROUTING *********************
+# ********************* ROUTES *********************
 
-app.register_blueprint(routing, url_prefix='/sapi/')
+app.register_blueprint(routes, url_prefix='/poapi/')
+
+# ************** HANDLING EXCEPTIONS ***************
+
+@app.errorhandler(BadRequest)
+def badrequesterrorhandler(error):
+    print(error)
+    return jsonify(error), 400
 
