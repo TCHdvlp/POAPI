@@ -1,5 +1,5 @@
-# SAPI1
-Basic API for SAPI1 live coding
+# POAPI
+Basic API for POAPI live coding
 
 # Getting started
 
