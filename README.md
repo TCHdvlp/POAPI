@@ -33,11 +33,11 @@ Basic API for POAPI live coding
 
 ## Clone the project
 
-  - Create a folder in your workspace that will be dedicated to the project. Then, clone the repository
+  - Create a folder in your workspace that will be dedicated to the project. Call it poapi. Then, clone the repository
   
-    ```$ git clone git@github.com:octo-woapi/SAPI1.git```
+    ```$ git clone git@github.com:octo-woapi/POAPI.git```
     
-    Enter the SAPI1 folder. Every command bellow will be made from this folder
+    Enter the 'poapi' folder. Every command bellow will be made from this folder
 
 
 ## Makefile
@@ -50,7 +50,7 @@ If you have troubles installing or using **make** in a Windows environment, you 
 
 The API project is accessible via a python virtual environment. For more informationlis about virtualenvs, check the [official documentation](https://virtualenv.pypa.io/en/stable/)
 
-Create a virtual environment inside the SAPI1 folder
+Create a virtual environment inside the poapi folder
 
     virtualenv venv
 
@@ -78,5 +78,5 @@ On Windows : ```venv/Scripts/activate.bat```
 
   The API runs on the address **127.0.0.1** (localhost) on the port **5000**
   
-  Visit http://localhost:5000/sapi/hello
+  Visit http://localhost:5000/poapi/hello
 
