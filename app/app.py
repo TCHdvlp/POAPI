@@ -3,10 +3,10 @@
 
 from flask import Flask, jsonify, url_for
 from flask_cors import CORS
-from models import db, User
-from json_encoder import PoapiJSONEncoder
-from routes import routes
-from exceptions import *
+from .models import db, User, Chapter
+from .json_encoder import PoapiJSONEncoder
+from .routes import routes
+from .exceptions import *
 
 
 # ********************** CONFIG **********************
@@ -35,10 +35,11 @@ db.create_all()
 
 admin = User(username='admin', email='admin@example.com')
 guest = User(username='guest', email='guest@example.com', job='consultant')
+chapter = Chapter()
 
 db.session.add(admin)
 db.session.add(guest)
-
+db.session.add(chapter)
 # this line should be the last in order to insert all tuples
 db.session.commit()
 
@@ -54,3 +55,8 @@ def badrequesterrorhandler(error):
     print(error)
     return jsonify(error), 400
 
+# Not Found error handler
+@app.errorhandler(NotFound)
+def notfounderrorhandler(error):
+    print(error)
+    return jsonify(error), 404

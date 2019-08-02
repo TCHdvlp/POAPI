@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 
 from flask import Blueprint, jsonify, request
-from models import Pet, User
+from .models import Pet, User, Question
 from sqlalchemy import exc
-from exceptions import *
+from .exceptions import *
 
 routes = Blueprint('routes', __name__)
 
@@ -22,17 +22,57 @@ def get_all_users():
 @routes.route("users", strict_slashes=False, methods=['POST'])
 def add_user():
     payload = request.get_json()
-    if not payload["email"] : raise MissingFieldError("email")
-    if not payload["username"] : raise MissingFieldError("username")
+
+    try:
+        if not payload["email"] : raise MissingFieldError("email")
+        if not payload["username"] : raise MissingFieldError("username")
+    except KeyError as e:
+        raise MissingFieldError(e.args[0])
 
     new_user = User(username = payload["username"], email = payload["email"], job = payload["job"])
-
 
     try :
         new_user.save()
     except exc.IntegrityError as e:
         raise DuplicationError(e.args[0])
+
+    return jsonify(new_user), 201
+
+#Create new question
+@routes.route("questions", strict_slashes=False, methods=['POST'])
+def add_question():
+    payload = request.get_json()
+
+    try:
+        if not payload["content"] : raise MissingFieldError("content")
     except KeyError as e:
         raise MissingFieldError(e.args[0])
 
-    return jsonify(new_user), 201
+    try:
+        new_question = Question(content=payload["content"],chapter_id=payload["chapter_id"])
+    except KeyError as e:
+        raise MissingFieldError(e.args[0])
+
+    new_question.save()
+
+
+    return jsonify(new_question), 201
+
+#Retrieve all  questions
+@routes.route("questions", strict_slashes=False, methods=['GET'])
+def get_all_questions():
+    return jsonify(Question.query.all())
+
+#Update question
+@routes.route("questions/<question_id>", strict_slashes=False, methods=['PUT'])
+def update_question(question_id):
+    payload = request.get_json()
+
+    question=Question.query.filter_by(id=question_id).first()
+
+    try:
+        updated_question=question.update(payload)
+    except AttributeError as e:
+        raise NotFound("question {id}".format(id=question_id))
+
+    return jsonify(updated_question), 200

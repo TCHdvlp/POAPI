@@ -15,3 +15,8 @@ class MissingFieldError(BadRequest):
 
     def __init__(self,field):
         self.message = "Field {field} is required".format(field=field)
+
+class NotFound(Exception):
+
+    def __init__(self, resource):
+        self.message = "Could not find the resource: {resource}".format(resource=resource)
