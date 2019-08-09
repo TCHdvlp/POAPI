@@ -3,7 +3,7 @@
 
 from flask import Flask, jsonify, url_for
 from flask_cors import CORS
-from .models import db, User, Chapter
+from .models import db, User, Chapter, Vote
 from .json_encoder import PoapiJSONEncoder
 from .routes import routes
 from .exceptions import *

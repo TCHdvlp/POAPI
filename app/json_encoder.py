@@ -2,7 +2,7 @@
 # coding=utf-8
 
 from flask.json import JSONEncoder
-from .models import User, Pet, Question
+from .models import User, Pet, Question, Vote
 from .exceptions import *
 
 class PoapiJSONEncoder(JSONEncoder):
@@ -25,7 +25,13 @@ class PoapiJSONEncoder(JSONEncoder):
                 'id':obj.id,
                 'content':obj.content,
                 'chapter_id':obj.chapter_id,
-                'votes':obj.votes
+                'votes': obj.votes
+            }
+
+        if isinstance(obj, Vote):
+            return {
+                'question_id':obj.question_id,
+                'user_id':obj.user_id
             }
 
         return super(PoapiJSONEncoder, self).default(obj)
