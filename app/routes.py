@@ -13,7 +13,7 @@ routes = Blueprint('routes', __name__)
 
 @routes.route("hello", strict_slashes=False)
 def say_hello():
-    return jsonify("Hello little PO's")
+    return jsonify("Hello fellow PO's")
 
 @routes.route("users", strict_slashes=False, methods=['GET'])
 def get_all_users():
@@ -42,27 +42,23 @@ def add_user():
 @routes.route("questions", strict_slashes=False, methods=['POST'])
 def add_question():
     payload = request.get_json()
-
     try:
         if not payload["content"] : raise MissingFieldError("content")
     except KeyError as e:
         raise MissingFieldError(e.args[0])
 
+    new_question = Question(content=payload["content"], chapter_id=payload["chapter_id"])
     try:
-        new_question = Question(content=payload["content"], chapter_id=payload["chapter_id"])
-    except KeyError as e:
-        raise MissingFieldError(e.args[0])
-
-    new_question.save()
+        new_question.save()
+    except exc.IntegrityError as e:
+        raise DuplicationError(e.args[0])
 
     return jsonify(new_question), 201
 
-# Retrieve all questions
+# Get all questions
 @routes.route("questions", strict_slashes=False, methods=['GET'])
 def get_all_questions():
-    questions=Question.query.all()
-    print("MON PRINT POUR DEBUG", questions)
-    return jsonify(questions)
+    return jsonify(Question.query.all())
 
 # Create a vote
 @routes.route("votes", strict_slashes=False, methods=['POST'])
@@ -75,17 +71,33 @@ def add_vote():
     except KeyError as e:
         raise MissingFieldError(e.args[0])
 
+    question_id=payload["question_id"]
+    user_id=payload["user_id"]
+    print(question_id)
+    print(user_id)
+
     try:
-        new_vote = Vote(question_id=payload["question_id"], user_id=payload["user_id"])
+        new_vote = Vote(question_id=question_id, user_id=user_id)
     except KeyError as e:
         raise MissingFieldError(e.args[0])
 
-        try :
-            new_vote.save()
-        except exc.IntegrityError as e:
-            raise DuplicationError(e.args[0])
 
-    return jsonify(new_vote), 201
+    voted_question = Question.query.get(question_id)
+    if voted_question is None:
+        raise NotFound(question_id)
+    voting_user = User.query.get(user_id)
+    if voting_user is None:
+        raise NotFound(user_id)
+
+    try:
+        voted_question.votes.append(new_vote)
+        voted_question.save()
+    except exc.IntegrityError as e:
+        raise DuplicationError(e.args[0])
+
+    voted_question = Question.query.get(question_id)
+
+    return jsonify(voted_question), 201
 
 
 

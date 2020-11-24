@@ -40,8 +40,10 @@ class Question(db.Model):
     content = db.Column(db.String(255), nullable=False)
     chapter_id = db.Column(db.Integer, db.ForeignKey('chapter.id'), nullable=True)
     #votes = db.Column(db.Integer, nullable=False, default=0)
-
     votes = db.relationship("Vote", back_populates = "question")
+
+    def __repr__(self):
+        return '<Question: %r>' % self.content
 
 # Add function
     def save(self):
@@ -60,8 +62,8 @@ class Question(db.Model):
 
 # Votes class definition
 class Vote(db.Model):
-    question_id = db.Column(db.Integer, primary_key=True, db.ForeignKey('question.id'), nullable=False)
-    user_id = db.Column(db.Integer, primary_key=True, db.ForeignKey('user.id'), nullable=False)
+    question_id = db.Column(db.Integer, db.ForeignKey('question.id'), primary_key=True, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True, nullable=False)
 
     question = db.relationship("Question", back_populates = "votes")
 

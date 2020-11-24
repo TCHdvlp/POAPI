@@ -48,6 +48,18 @@ db.session.commit()
 
 app.register_blueprint(routes, url_prefix='/poapi/')
 
+@app.route("/poapi/routes")
+def site_map():
+    links = []
+    for rule in app.url_map.iter_rules():
+        # import pdb; pdb.set_trace()
+        methods = []
+        for method in rule.methods:
+            methods.append(method)
+        link = {"URL": rule.rule, "methods": methods}
+        links.append(link)
+    return jsonify(links)
+
 # ************** HANDLING EXCEPTIONS ***************
 
 @app.errorhandler(BadRequest)
