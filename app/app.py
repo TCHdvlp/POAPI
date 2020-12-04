@@ -31,17 +31,24 @@ db.init_app(app)
 db.create_all()
 
 
+# ********* CLOSE DB CONNECTION ON SHUTDOWN **********
+@app.teardown_appcontext
+def shutdown_session(exception=None):
+    db.session.remove()
+
 # ************** MODELS INITIALIZATION ***************
+@app.route("/poapi/initdb")
+def init_db():
+    admin = User(username='admin', email='admin@example.com')
+    guest = User(username='guest', email='guest@example.com', job='consultant')
+    chapter = Chapter()
 
-admin = User(username='admin', email='admin@example.com')
-guest = User(username='guest', email='guest@example.com', job='consultant')
-chapter = Chapter()
-
-db.session.add(admin)
-db.session.add(guest)
-db.session.add(chapter)
-# this line should be the last in order to insert all tuples
-db.session.commit()
+    db.session.add(admin)
+    db.session.add(guest)
+    db.session.add(chapter)
+    # this line should be the last in order to insert all tuples
+    db.session.commit()
+    return "", 204
 
 
 # ********************* ROUTES *********************

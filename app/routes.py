@@ -19,13 +19,19 @@ def say_hello():
 def get_all_users():
     return jsonify(User.query.all())
 
+@routes.route("users/<user_id>", strict_slashes=False, methods=['GET'])
+def get_user(user_id):
+    user = User.query.get(user_id)
+    return jsonify(user), 200
+
 @routes.route("users", strict_slashes=False, methods=['POST'])
 def add_user():
     payload = request.get_json()
-
     try:
-        if not payload["email"] : raise MissingFieldError("email")
-        if not payload["username"] : raise MissingFieldError("username")
+        if "email" not in payload :
+            raise MissingFieldError("email")
+        if "username" not in payload :
+            raise MissingFieldError("username")
     except KeyError as e:
         raise MissingFieldError(e.args[0])
 
@@ -43,7 +49,8 @@ def add_user():
 def add_question():
     payload = request.get_json()
     try:
-        if not payload["content"] : raise MissingFieldError("content")
+        if "content" not in payload :
+           raise MissingFieldError("content")
     except KeyError as e:
         raise MissingFieldError(e.args[0])
 
@@ -66,8 +73,10 @@ def add_vote():
     payload = request.get_json()
 
     try:
-        if not payload["question_id"] : raise MissingFieldError("question_id")
-        if not payload["user_id"] : raise MissingFieldError("user_id")
+        if "question_id" not in payload :
+            raise MissingFieldError("question_id")
+        if "user_id" not in payload :
+            raise MissingFieldError("user_id")
     except KeyError as e:
         raise MissingFieldError(e.args[0])
 
